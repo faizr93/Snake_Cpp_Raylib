@@ -100,7 +100,7 @@ void Snake::scale()
     float scaleFactor = Grid::gridSize / lastGridSize;
 
     // Scale each segment's position proportionally
-    for (auto &segment : segments)
+    for (auto& segment : segments)
     {
         segment.rect.x *= scaleFactor;
         segment.rect.y *= scaleFactor;
