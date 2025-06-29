@@ -17,7 +17,8 @@ Snake::Snake()
 // --- Core game loop methods ---
 void Snake::update()
 {
-    if (Grid::isScaling) {
+    if (Grid::isScaling)
+    {
         scale();
         Grid::isScaling = false;
         return;
@@ -30,7 +31,7 @@ void Snake::update()
     if (currentTime - lastMoveTime < moveInterval)
         return;
 
-    for (auto& segment : segments)
+    for (auto &segment : segments)
         segment.update();
 
     lastMoveTime = currentTime;
@@ -41,7 +42,7 @@ void Snake::update()
 
 void Snake::render()
 {
-    for (auto& segment : segments)
+    for (auto &segment : segments)
         segment.render();
 }
 
@@ -66,16 +67,24 @@ void Snake::move()
 
     // Store previous positions
     std::vector<raylib::Vector2> prevPositions;
-    for (const auto& seg : segments)
+    for (const auto &seg : segments)
         prevPositions.push_back(seg.rect.GetPosition());
 
     // Move head
     switch (snakeHeadDirection)
     {
-        case UP:    segments[0].rect.y -= Grid::gridSize; break;
-        case DOWN:  segments[0].rect.y += Grid::gridSize; break;
-        case LEFT:  segments[0].rect.x -= Grid::gridSize; break;
-        case RIGHT: segments[0].rect.x += Grid::gridSize; break;
+    case UP:
+        segments[0].rect.y -= Grid::gridSize;
+        break;
+    case DOWN:
+        segments[0].rect.y += Grid::gridSize;
+        break;
+    case LEFT:
+        segments[0].rect.x -= Grid::gridSize;
+        break;
+    case RIGHT:
+        segments[0].rect.x += Grid::gridSize;
+        break;
     }
 
     // Move body
@@ -91,7 +100,7 @@ void Snake::scale()
     float scaleFactor = Grid::gridSize / lastGridSize;
 
     // Scale each segment's position proportionally
-    for (auto& segment : segments)
+    for (auto &segment : segments)
     {
         segment.rect.x *= scaleFactor;
         segment.rect.y *= scaleFactor;
@@ -121,7 +130,7 @@ void Snake::wrapPos()
 
 void Snake::snapToGrid()
 {
-    for (auto& segment : segments)
+    for (auto &segment : segments)
     {
         segment.rect.x = snapNearestF(segment.rect.x, Grid::gridSize);
         segment.rect.y = snapNearestF(segment.rect.y, Grid::gridSize);
@@ -144,4 +153,30 @@ void Snake::init()
 void Snake::grow()
 {
     // TODO: Implement grow logic
+}
+bool Snake::isIntact() const
+{
+    for (size_t i = 1; i < segments.size(); ++i)
+    {
+        int dx = static_cast<int>(segments[i].rect.x - segments[i - 1].rect.x);
+        int dy = static_cast<int>(segments[i].rect.y - segments[i - 1].rect.y);
+
+        // Check for wrapping: if the absolute difference is larger than grid size, it's wrapping
+        if (abs(dx) > Grid::gridSize || abs(dy) > Grid::gridSize)
+            return false;
+
+        // Segments must be adjacent: either dx or dy is exactly gridSize, the other is 0
+        bool adjacent = (abs(dx) == Grid::gridSize && dy == 0) ||
+                        (abs(dy) == Grid::gridSize && dx == 0);
+        if (!adjacent)
+            return false;
+
+        // Also, both segments must be within screen bounds
+        if (segments[i].rect.x     < 0 || segments[i].rect.x     >= GetScreenWidth()  ||
+            segments[i].rect.y     < 0 || segments[i].rect.y     >= GetScreenHeight() ||
+            segments[i - 1].rect.x < 0 || segments[i - 1].rect.x >= GetScreenWidth()  ||
+            segments[i - 1].rect.y < 0 || segments[i - 1].rect.y >= GetScreenHeight())
+            return false;
+    }
+    return true;
 }

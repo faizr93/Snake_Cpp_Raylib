@@ -19,6 +19,7 @@ public:
     void scale();
     void wrapPos();
     void snapToGrid();
+    bool isIntact() const;
 
     // --- State ---
     std::vector<SnakeSegment> segments;

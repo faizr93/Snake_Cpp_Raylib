@@ -8,8 +8,9 @@ Game::Game()
 
 void Game::handleInput()
 {
-    grid.handleInput();
     snake.handleInput();
+    if(!snake.isIntact()) return; // Grid changee only if snake is intact
+    grid.handleInput();
 }
 
 void Game::render()
