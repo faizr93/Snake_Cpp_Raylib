@@ -85,12 +85,23 @@ void Snake::move()
 
 void Snake::scale()
 {
+    static float lastGridSize = Grid::gridSize; // Keep track of previous grid size
+
+    // Calculate scaling factor
+    float scaleFactor = Grid::gridSize / lastGridSize;
+
+    // Scale each segment's position proportionally
     for (auto& segment : segments)
     {
+        segment.rect.x *= scaleFactor;
+        segment.rect.y *= scaleFactor;
         segment.rect.width = Grid::gridSize;
         segment.rect.height = Grid::gridSize;
     }
+
     snapToGrid();
+
+    lastGridSize = Grid::gridSize; // Update for next scale
 }
 
 void Snake::wrapPos()
