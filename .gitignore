@@ -1,0 +1,40 @@
+# Compiled object files
+*.o
+*.obj
+
+# Compiled binary files
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Build directories
+/build/
+/bin/
+/out/
+
+# VS Code settings
+.vscode/
+
+# CMake files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Raylib generated files
+raylib.lib
+raylib.dll
+raylib.a
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Logs and temporary files
+*.log
+*.tmp
+
+# Backup files
+*~
+*.bak
