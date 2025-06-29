@@ -31,10 +31,10 @@ void Grid::render()
 {
     for (int x = 0; x < GetScreenWidth(); x += Grid::gridSize)
     {
-        DrawLine(x, 0, x, GetScreenHeight(), DARKGRAY);
+        DrawLine(x, 0, x, GetScreenHeight(), DARKGRAY); // Vertical lines
     }
     for (int y = 0; y < GetScreenHeight(); y += Grid::gridSize)
     {
-        DrawLine(0, y, GetScreenWidth(), y, DARKGRAY);
+        DrawLine(0, y, GetScreenWidth(), y, DARKGRAY); // Horizontal lines
     }
 }
