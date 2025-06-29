@@ -8,6 +8,7 @@ Game::Game()
 
 void Game::handleInput()
 {
+    grid.handleInput();
     snake.handleInput();
 }
 
@@ -23,5 +24,6 @@ void Game::render()
 
 void Game::update()
 {
+    grid.update();
     snake.update();
 }

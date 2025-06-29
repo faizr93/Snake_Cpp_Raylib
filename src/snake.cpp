@@ -17,8 +17,11 @@ Snake::Snake()
 // --- Core game loop methods ---
 void Snake::update()
 {
-    if (Grid::isScaling)
+    if (Grid::isScaling) {
         scale();
+        Grid::isScaling = false;
+        return;
+    }
 
     static double lastMoveTime = 0;
     const double moveInterval = 0.15;
@@ -33,7 +36,7 @@ void Snake::update()
     lastMoveTime = currentTime;
 
     move();
-    clampSnakePosition();
+    wrapPos();
 }
 
 void Snake::render()
@@ -45,8 +48,6 @@ void Snake::render()
 // --- Input and mechanics ---
 void Snake::handleInput()
 {
-    Grid::isScaling = false;
-
     // Directional input
     if ((IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)) && snakeHeadDirection != DOWN)
         snakeHeadDirection = UP;
@@ -56,20 +57,6 @@ void Snake::handleInput()
         snakeHeadDirection = LEFT;
     else if ((IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)) && snakeHeadDirection != LEFT)
         snakeHeadDirection = RIGHT;
-
-    // Grid scaling
-    else if (IsKeyPressed(KEY_KP_1))
-    {
-        Grid::gridSize += 5;
-        Grid::isScaling = true;
-    }
-    else if (IsKeyPressed(KEY_KP_2))
-    {
-        Grid::gridSize -= 5;
-        Grid::isScaling = true;
-    }
-
-    Grid::clampGridSize();
 }
 
 void Snake::move()
@@ -106,7 +93,7 @@ void Snake::scale()
     snapToGrid();
 }
 
-void Snake::clampSnakePosition()
+void Snake::wrapPos()
 {
     // Wrap horizontally
     if (segments[0].rect.GetX() < 0)

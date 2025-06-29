@@ -17,7 +17,7 @@ public:
     void handleInput();
     void move();
     void scale();
-    void clampSnakePosition();
+    void wrapPos();
     void snapToGrid();
 
     // --- State ---

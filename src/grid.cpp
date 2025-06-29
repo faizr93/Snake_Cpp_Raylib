@@ -1,5 +1,7 @@
 #include <raylib-cpp.hpp>
+#include <algorithm>
 #include "grid.h"
+#include "utils.h"
 
 float Grid::gridSize = 25.0f;
 bool Grid::isScaling = false;
@@ -8,24 +10,53 @@ Grid::Grid()
 {
     gridSize = 25.0f;
 }
-void Grid::clampGridSize()
+
+std::vector<int> Grid::getCommonScreenFactors()
 {
-    if (gridSize < 5.0f)
+    // Get screen dimensions
+    int screenWidth = GetScreenWidth();
+    int screenHeight = GetScreenHeight();
+
+    // Find common factors of width and height
+    std::vector<int> factorsWidth = getFactors(screenWidth);
+    std::vector<int> factorsHeight = getFactors(screenHeight);
+
+    // Find common factors
+    std::vector<int> commonFactors = getCommonFactors(screenWidth, screenHeight);
+
+    return commonFactors;
+}
+
+void Grid::handleInput()
+{
+    isScaling = false;
+    if (IsKeyPressed(KEY_KP_1))
     {
-        gridSize = 5.0f;
+        ++gridSizesIterator;
+        gridSize = gridSizes[gridSizesIterator % gridSizes.size()];
+        isScaling = true;
     }
-    else if (gridSize > 100.0f)
+    else if (IsKeyPressed(KEY_KP_2))
     {
-        gridSize = 100.0f;
+        --gridSizesIterator;
+        gridSize = gridSizes[gridSizesIterator % gridSizes.size()];
+        isScaling = true;
     }
 }
+
+std::vector<int> Grid::getClampedFactors(const std::vector<int> &factors, int min, int max)
+{
+    std::vector<int> filtered;
+    for (int factor : factors)
+    {
+        if (factor >= min && factor <= max)
+            filtered.push_back(factor);
+    }
+    return filtered;
+}
+
 void Grid::update()
 {
-    if (isScaling)
-    {
-        /* code */
-    }
-    
 }
 void Grid::render()
 {
