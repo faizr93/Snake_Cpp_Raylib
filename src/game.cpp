@@ -18,6 +18,7 @@ void Game::render()
     grid.render();
     snake.render();
     EndDrawing();
+    
 }
 
 void Game::update()

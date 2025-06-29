@@ -7,6 +7,7 @@ public:
     static bool isScaling;
     static float gridSize;
     Grid();
+    static void clampGridSize();
     void update() override;
     void render() override;
 };

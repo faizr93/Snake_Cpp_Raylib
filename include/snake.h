@@ -16,6 +16,6 @@ public:
 
 private:
     void grow();
-    void init();
+    void reset();
     int length = 7;
 };

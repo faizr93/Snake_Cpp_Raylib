@@ -8,6 +8,17 @@ Grid::Grid()
 {
     gridSize = 25.0f;
 }
+void Grid::clampGridSize()
+{
+    if (gridSize < 5.0f)
+    {
+        gridSize = 5.0f;
+    }
+    else if (gridSize > 100.0f)
+    {
+        gridSize = 100.0f;
+    }
+}
 void Grid::update()
 {
     if (isScaling)

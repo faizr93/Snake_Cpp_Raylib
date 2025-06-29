@@ -2,11 +2,12 @@
 #include "grid.h"
 Snake::Snake()
 {
-    init();
+    reset();
 }
 
 void Snake::handleInput()
 {
+    Grid::isScaling = false;
     if ((IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)) && snakeHeadDirection != DOWN)
         snakeHeadDirection = UP;
     else if ((IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)) && snakeHeadDirection != UP)
@@ -15,15 +16,22 @@ void Snake::handleInput()
         snakeHeadDirection = LEFT;
     else if ((IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)) && snakeHeadDirection != LEFT)
         snakeHeadDirection = RIGHT;
+    else if (IsKeyPressed(KEY_KP_1)){
+        Grid::gridSize += 5;
+        Grid::isScaling = true;}
+    else if (IsKeyPressed(KEY_KP_2)){
+        Grid::gridSize -= 5;
+        Grid::isScaling = true;}
+        Grid::clampGridSize();
 }
 
 void Snake::grow() { /* ... */ }
 
-void Snake::init()
+void Snake::reset()
 {
     segments.clear();
     snakeHeadDirection = gameObject::UP;
-    
+
     for (size_t i = 0; i < length; i++)
     {
         SnakeSegment segment;
@@ -34,10 +42,11 @@ void Snake::init()
 
 void Snake::update()
 {
-    if(Grid::isScaling) {
-        init();
+    if (Grid::isScaling)
+    {
+        reset();
     }
-    
+
     static double lastMoveTime = 0;
     const double moveInterval = 0.15;
     double currentTime = GetTime();
@@ -48,7 +57,7 @@ void Snake::update()
     for (auto &segment : segments)
         segment.update();
     lastMoveTime = currentTime;
-    
+
     move();
     clampSnakePosition();
 }

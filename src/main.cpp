@@ -1,5 +1,7 @@
 #include "game.h"
 #include "raylib-cpp.hpp"
+#include "grid.h" //FOR DEBUG
+#include <iostream>
 
 int main()
 {
@@ -11,6 +13,7 @@ int main()
         Snake.handleInput();
         Snake.update();
         Snake.render();
+        std::cout<<Grid::gridSize;
     }
 
     return 0;
