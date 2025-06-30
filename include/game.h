@@ -3,13 +3,13 @@
 #include "gameObject.h"
 #include "grid.h"
 
-class Game : public gameObject
+class Game : public GameObject
 {
 public:
     Grid grid;
     Snake snake;
     Game();
-    void render();
+    void render() const;
     void update();
     void handleInput();
     

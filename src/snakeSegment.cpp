@@ -4,10 +4,10 @@
 SnakeSegment::SnakeSegment()
     : rect(250, 250, Grid::gridSize, Grid::gridSize), color(GREEN) {}
 
-void SnakeSegment::render()
+void SnakeSegment::render() const
 {
-    DrawRectangleRec(rect, color);
-    DrawRectangleLinesEx(rect, 3, RED);
+    rect.Draw(color);
+    rect.DrawLines(BLUE, rect.GetHeight()/6);
 }
 
 void SnakeSegment::update()

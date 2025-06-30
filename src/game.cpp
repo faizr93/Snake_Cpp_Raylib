@@ -13,7 +13,7 @@ void Game::handleInput()
     grid.handleInput();
 }
 
-void Game::render()
+void Game::render() const
 {
     BeginDrawing();
     ClearBackground(BLACK);

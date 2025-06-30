@@ -58,7 +58,7 @@ std::vector<int> Grid::getClampedFactors(const std::vector<int> &factors, int mi
 void Grid::update()
 {
 }
-void Grid::render()
+void Grid::render() const
 {
     for (int x = 0; x < GetScreenWidth(); x += Grid::gridSize)
         DrawLine(x, 0, x, GetScreenHeight(), DARKGRAY); // Vertical lines

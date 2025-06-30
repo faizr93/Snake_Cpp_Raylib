@@ -1,6 +1,6 @@
 #pragma once
 
-class gameObject
+class GameObject
 {
 public:
     enum Direction
@@ -11,5 +11,5 @@ public:
         RIGHT
     };
     virtual void update() = 0;
-    virtual void render() = 0;
+    virtual void render() const = 0;
 };

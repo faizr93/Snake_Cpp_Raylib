@@ -2,12 +2,12 @@
 #include <raylib-cpp.hpp>
 #include "gameObject.h"
 
-class SnakeSegment : public gameObject {
+class SnakeSegment : public GameObject {
 public:
     raylib::Rectangle rect;
     raylib::Color color;
     SnakeSegment();
-    void render() override;
+    void render() const override;
     void update() override;
 };
 

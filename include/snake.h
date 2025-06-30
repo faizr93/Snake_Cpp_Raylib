@@ -3,7 +3,7 @@
 #include "gameObject.h"
 
 // Snake class handles the snake's state, movement, and rendering
-class Snake : public gameObject
+class Snake : public GameObject
 {
 public:
     // --- Construction ---
@@ -11,19 +11,19 @@ public:
 
     // --- Core game loop methods ---
     void update() override;
-    void render() override;
+    void render() const override;
 
     // --- Input and mechanics ---
     void handleInput();
     void move();
     void scale();
     void wrapPos();
-    void snapToGrid();
+    void snapSnakeToGrid();
     bool isIntact() const;
 
     // --- State ---
     std::vector<SnakeSegment> segments;
-    gameObject::Direction snakeHeadDirection = UP;
+    GameObject::Direction snakeHeadDirection = UP;
 
 private:
     // --- Internal helpers ---

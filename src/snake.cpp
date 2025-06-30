@@ -1,12 +1,6 @@
 #include "snake.h"
 #include "grid.h"
-
-// --- Utility ---
-static float snapNearestF(float value, float grid)
-{
-    // Snap value to the nearest multiple of grid
-    return roundf(value / grid) * grid;
-}
+#include "utils.h"
 
 // --- Construction ---
 Snake::Snake()
@@ -40,7 +34,7 @@ void Snake::update()
     wrapPos();
 }
 
-void Snake::render()
+void Snake::render() const
 {
     for (auto &segment : segments)
         segment.render();
@@ -102,13 +96,13 @@ void Snake::scale()
     // Scale each segment's position proportionally
     for (auto& segment : segments)
     {
-        segment.rect.x *= scaleFactor;
-        segment.rect.y *= scaleFactor;
-        segment.rect.width = Grid::gridSize;
-        segment.rect.height = Grid::gridSize;
+        segment.rect.x      *= scaleFactor;
+        segment.rect.y      *= scaleFactor;
+        segment.rect.width   = Grid::gridSize;
+        segment.rect.height  = Grid::gridSize;
     }
 
-    snapToGrid();
+    snapSnakeToGrid();
 
     lastGridSize = Grid::gridSize; // Update for next scale
 }
@@ -128,12 +122,12 @@ void Snake::wrapPos()
         segments[0].rect.SetY(0);
 }
 
-void Snake::snapToGrid()
+void Snake::snapSnakeToGrid()
 {
     for (auto &segment : segments)
     {
-        segment.rect.x = snapNearestF(segment.rect.x, Grid::gridSize);
-        segment.rect.y = snapNearestF(segment.rect.y, Grid::gridSize);
+        snapToGrid(segment.rect.x, Grid::gridSize);
+        snapToGrid(segment.rect.y, Grid::gridSize);
     }
 }
 
@@ -147,7 +141,7 @@ void Snake::init()
         segment.rect.SetPosition(250, 250 + i * Grid::gridSize);
         segments.push_back(segment);
     }
-    snapToGrid();
+    snapSnakeToGrid();
 }
 
 void Snake::grow()
