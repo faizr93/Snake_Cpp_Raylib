@@ -1,13 +1,15 @@
-#include "utils.h"
+#include <raylib-cpp.hpp>
 #include <algorithm>
 #include <cmath>
+#include "utils.h"
 
 void snapToGrid(float& valueToSnap, float gridToSnapTo)
 {
     valueToSnap = roundf(valueToSnap / gridToSnapTo) * gridToSnapTo;
 }
 
-const std::vector<int> getFactors(int value)
+
+std::vector<int> getFactors(int value)
 {
     std::vector<int> factors;
     for (int i = 1; i <= value; ++i)
@@ -18,7 +20,7 @@ const std::vector<int> getFactors(int value)
     return factors;
 }
 
-const std::vector<int> getCommonFactors(int a, int b)
+std::vector<int> getCommonFactors(int a, int b)
 {
     const std::vector<int> factorsA = getFactors(a);
     const std::vector<int> factorsB = getFactors(b);

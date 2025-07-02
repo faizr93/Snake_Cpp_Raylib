@@ -1,11 +1,23 @@
 #include "snake.h"
 #include "grid.h"
 #include "utils.h"
+#include "foods.h"
 
 // --- Construction ---
-Snake::Snake()
+
+Snake::Snake(std::string name, int length, raylib::Color snakeColor)
 {
-    init();
+    segments.clear();
+    playerName = name;
+
+    for (size_t i = 0; i < length; ++i)
+    {
+        // segment.color = snakeColor;
+        // segment.rect.SetPosition(250, 250 + i * Grid::gridSize);
+        SnakeSegment segment({250, 250 + i * Grid::gridSize}, snakeColor);
+        segments.push_back(segment);
+    }
+    snapSnakeToGrid();
 }
 
 // --- Core game loop methods ---
@@ -53,16 +65,22 @@ void Snake::handleInput()
     else if ((IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)) && snakeHeadDirection != LEFT)
         snakeHeadDirection = RIGHT;
 }
-
+const std::vector<raylib::Vector2> Snake::getSnakePos()
+{
+    std::vector<raylib::Vector2> positions;
+    for (const auto &seg : segments)
+    {
+        positions.push_back(seg.rect.GetPosition());
+    }
+    return positions;
+}
 void Snake::move()
 {
     if (segments.empty())
         return;
 
     // Store previous positions
-    std::vector<raylib::Vector2> prevPositions;
-    for (const auto &seg : segments)
-        prevPositions.push_back(seg.rect.GetPosition());
+    std::vector<raylib::Vector2> prevPositions = getSnakePos();
 
     // Move head
     switch (snakeHeadDirection)
@@ -94,12 +112,10 @@ void Snake::scale()
     float scaleFactor = Grid::gridSize / lastGridSize;
 
     // Scale each segment's position proportionally
-    for (auto& segment : segments)
+    for (auto &segment : segments)
     {
-        segment.rect.x      *= scaleFactor;
-        segment.rect.y      *= scaleFactor;
-        segment.rect.width   = Grid::gridSize;
-        segment.rect.height  = Grid::gridSize;
+        segment.rect.SetPosition(segment.rect.x * scaleFactor, segment.rect.y * scaleFactor);
+        segment.rect.SetSize(Grid::gridSize, Grid::gridSize);
     }
 
     snapSnakeToGrid();
@@ -109,17 +125,18 @@ void Snake::scale()
 
 void Snake::wrapPos()
 {
+    Vector2 headPos = getHeadPos();
     // Wrap horizontally
-    if (segments[0].rect.GetX() < 0)
-        segments[0].rect.SetX(GetScreenWidth() - Grid::gridSize);
-    else if (segments[0].rect.x >= GetScreenWidth())
-        segments[0].rect.SetX(0);
+    if (headPos.x < 0)
+        setHeadPos({GetScreenWidth() - Grid::gridSize, headPos.y});
+    else if (headPos.x >= GetScreenWidth())
+        setHeadPos({0,headPos.y});
 
     // Wrap vertically
-    if (segments[0].rect.GetY() < 0)
-        segments[0].rect.SetY(GetScreenHeight() - Grid::gridSize);
-    else if (segments[0].rect.y >= GetScreenHeight())
-        segments[0].rect.SetY(0);
+    if (headPos.y < 0)
+        setHeadPos({headPos.x,GetScreenHeight() - Grid::gridSize});
+    else if (headPos.y >= GetScreenHeight())
+        setHeadPos({headPos.x,0});
 }
 
 void Snake::snapSnakeToGrid()
@@ -130,23 +147,22 @@ void Snake::snapSnakeToGrid()
         snapToGrid(segment.rect.y, Grid::gridSize);
     }
 }
-
 // --- Internal helpers ---
-void Snake::init()
+
+const raylib::Vector2 Snake::getHeadPos()
 {
-    segments.clear();
-    for (size_t i = 0; i < length; ++i)
-    {
-        SnakeSegment segment;
-        segment.rect.SetPosition(250, 250 + i * Grid::gridSize);
-        segments.push_back(segment);
-    }
-    snapSnakeToGrid();
+    return segments[0].rect.GetPosition();
+}
+void Snake::setHeadPos(Vector2 newPos) 
+{
+    segments[0].rect.SetX(newPos.x);
+    segments[0].rect.SetY(newPos.y);
 }
 
 void Snake::grow()
 {
-    // TODO: Implement grow logic
+    segments.push_back(SnakeSegment());
+    length++;
 }
 bool Snake::isIntact() const
 {
@@ -166,9 +182,9 @@ bool Snake::isIntact() const
             return false;
 
         // Also, both segments must be within screen bounds
-        if (segments[i].rect.x     < 0 || segments[i].rect.x     >= GetScreenWidth()  ||
-            segments[i].rect.y     < 0 || segments[i].rect.y     >= GetScreenHeight() ||
-            segments[i - 1].rect.x < 0 || segments[i - 1].rect.x >= GetScreenWidth()  ||
+        if (segments[i].rect.x < 0 || segments[i].rect.x >= GetScreenWidth() ||
+            segments[i].rect.y < 0 || segments[i].rect.y >= GetScreenHeight() ||
+            segments[i - 1].rect.x < 0 || segments[i - 1].rect.x >= GetScreenWidth() ||
             segments[i - 1].rect.y < 0 || segments[i - 1].rect.y >= GetScreenHeight())
             return false;
     }

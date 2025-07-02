@@ -7,13 +7,26 @@ class Snake : public GameObject
 {
 public:
     // --- Construction ---
-    Snake();
+    std::string playerName; // when 1 snake
+    int score;
+    int highScore;
+    
+    Snake(std::string name = "Player1", int length = 7, raylib::Color snakeColor = GREEN);
+
+    enum Direction
+    {
+        UP,
+        DOWN,
+        LEFT,
+        RIGHT
+    };
 
     // --- Core game loop methods ---
     void update() override;
     void render() const override;
 
     // --- Input and mechanics ---
+    const std::vector<raylib::Vector2> getSnakePos();
     void handleInput();
     void move();
     void scale();
@@ -23,12 +36,15 @@ public:
 
     // --- State ---
     std::vector<SnakeSegment> segments;
-    GameObject::Direction snakeHeadDirection = UP;
+    Direction snakeHeadDirection = UP;
 
-private:
+    // --- Getters/Setters---
+    const raylib::Vector2 getHeadPos();
+    void setHeadPos(Vector2 pos);
+
     // --- Internal helpers ---
-    void init();
     void grow();
+    private:
 
     // --- Config ---
     int length = 7;

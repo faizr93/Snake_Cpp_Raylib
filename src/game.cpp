@@ -25,6 +25,7 @@ void Game::render() const
 
 void Game::update()
 {
+    ;
     grid.update();
     snake.update();
 }
