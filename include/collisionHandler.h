@@ -1,4 +1,7 @@
-class CollisionHandler 
+#pragma once
+
+class CollisionHandler
 {
-    bool CheckCollision();
+public:
+    // bool CheckCollision();
 };

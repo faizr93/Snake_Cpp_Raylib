@@ -5,5 +5,5 @@ class Snake;
 class ICollideable
 {
 public:
-    virtual void onCollision(Snake &snake) = 0;
+    virtual void handleCollision(Snake& snake) = 0;
 };

@@ -1,9 +1,6 @@
 #pragma once
-#include <vector>
 
-namespace raylib{ // Forward Declaration
-    class Vector2;
-}
+#include <vector>
 
 std::vector<int> getFactors(int value);
 std::vector<int> getCommonFactors(int a, int b);

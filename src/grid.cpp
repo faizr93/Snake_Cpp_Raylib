@@ -3,29 +3,37 @@
 #include "grid.h"
 #include "utils.h"
 
-float Grid::gridSize = 25.0f;
-bool Grid::isScaling = false;
+// --- Construction ---
 
-Grid::Grid()
-{
-    gridSize = 25.0f;
-}
+Grid::Grid(float gridSize)
+: gridSize(25.0f), isScaling(false) {}
+
+// --- Factor Utilities ---
 
 std::vector<int> Grid::getCommonScreenFactors()
 {
-    // Get screen dimensions
     int screenWidth = GetScreenWidth();
     int screenHeight = GetScreenHeight();
 
-    // Find common factors of width and height
     std::vector<int> factorsWidth = getFactors(screenWidth);
     std::vector<int> factorsHeight = getFactors(screenHeight);
 
-    // Find common factors
     std::vector<int> commonFactors = getCommonFactors(screenWidth, screenHeight);
-
     return commonFactors;
 }
+
+std::vector<int> Grid::getClampedFactors(const std::vector<int> &factors, int min, int max)
+{
+    std::vector<int> filtered;
+    for (int factor : factors)
+    {
+        if (factor >= min && factor <= max)
+            filtered.push_back(factor);
+    }
+    return filtered;
+}
+
+// --- Input Handling ---
 
 void Grid::handleInput()
 {
@@ -44,25 +52,15 @@ void Grid::handleInput()
     }
 }
 
-std::vector<int> Grid::getClampedFactors(const std::vector<int> &factors, int min, int max)
-{
-    std::vector<int> filtered;
-    for (int factor : factors)
-    {
-        if (factor >= min && factor <= max)
-            filtered.push_back(factor);
-    }
-    return filtered;
-}
+// --- Update & Render ---
 
-void Grid::update()
-{
-}
+void Grid::update() {}
+
 void Grid::render() const
 {
     for (int x = 0; x < GetScreenWidth(); x += Grid::gridSize)
-        DrawLine(x, 0, x, GetScreenHeight(), DARKGRAY); // Vertical lines
+        DrawLine(x, 0, x, GetScreenHeight(), DARKGRAY);
 
     for (int y = 0; y < GetScreenHeight(); y += Grid::gridSize)
-        DrawLine(0, y, GetScreenWidth(), y, DARKGRAY); // Horizontal lines
+        DrawLine(0, y, GetScreenWidth(), y, DARKGRAY);
 }

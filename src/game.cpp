@@ -1,31 +1,31 @@
 #include "game.h"
-#include <raylib-cpp.hpp>
 #include "snake.h"
 
-Game::Game()
-{
-}
+// --- Construction ---
 
-void Game::handleInput()
-{
+Game::Game() {}
+
+// --- Input Handling ---
+
+void Game::handleInput() {
     snake.handleInput();
-    if(!snake.isIntact()) return; // Grid changee only if snake is intact
+    if (!snake.isIntact()) return;
     grid.handleInput();
 }
 
-void Game::render() const
-{
+// --- Rendering ---
+
+void Game::render() const {
     BeginDrawing();
     ClearBackground(BLACK);
     grid.render();
     snake.render();
     EndDrawing();
-    
 }
 
-void Game::update()
-{
-    ;
+// --- Update ---
+
+void Game::update() {
     grid.update();
     snake.update();
 }

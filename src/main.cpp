@@ -1,19 +1,19 @@
 #include "game.h"
-#include "raylib-cpp.hpp"
-#include "grid.h" //FOR DEBUG
+#include <raylib-cpp.hpp>
+#include "grid.h" // For debug
 #include <iostream>
 
-int main()
-{
+// --- Main Entry Point ---
+
+int main() {
     raylib::Window window(800, 600, "Cobra", FLAG_VSYNC_HINT);
     Game Cobra;
 
-    while (!WindowShouldClose())
-    {
+    while (!WindowShouldClose()) {
         Cobra.handleInput();
         Cobra.update();
         Cobra.render();
-        std::cout<<Grid::gridSize;
+        std::cout << Grid::gridSize;
     }
 
     return 0;

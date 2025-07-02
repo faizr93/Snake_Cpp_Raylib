@@ -5,57 +5,67 @@
 
 // --- Construction ---
 
-Snake::Snake(std::string name, int length, raylib::Color snakeColor)
+Snake::Snake(Grid& grid, std::string name, int length, raylib::Color snakeColor)
+    : playerName(name), gridRef(grid)
 {
+    lastMoveTime = 0.0;
     segments.clear();
-    playerName = name;
-
     for (size_t i = 0; i < length; ++i)
     {
-        // segment.color = snakeColor;
-        // segment.rect.SetPosition(250, 250 + i * Grid::gridSize);
-        SnakeSegment segment({250, 250 + i * Grid::gridSize}, snakeColor);
+        SnakeSegment segment(grid, {250, 250 + i * gridRef.gridSize}, snakeColor);
         segments.push_back(segment);
     }
     snapSnakeToGrid();
 }
 
 // --- Core game loop methods ---
+
 void Snake::update()
 {
-    if (Grid::isScaling)
+    moved = false;
+    if (gridRef.isScaling)
     {
         scale();
-        Grid::isScaling = false;
+        gridRef.isScaling = false;
         return;
     }
 
-    static double lastMoveTime = 0;
-    const double moveInterval = 0.15;
-    double currentTime = GetTime();
-
-    if (currentTime - lastMoveTime < moveInterval)
-        return;
+    // Use Raylib's GetFrameTime for delta time
+    static double moveAccumulator = 0.0;
+    double deltaTime = GetFrameTime();
+    moveAccumulator += deltaTime;
 
     for (auto &segment : segments)
         segment.update();
 
-    lastMoveTime = currentTime;
-
-    move();
-    wrapPos();
+    // Move the snake based on accumulated time
+    if (moveAccumulator >= moveInterval)
+    {
+        move();
+        moved = true;
+        wrapPos();
+        moveAccumulator -= moveInterval; // preserve leftover time
+    }
 }
 
 void Snake::render() const
 {
-    for (auto &segment : segments)
+    for (const auto &segment : segments)
         segment.render();
 }
 
 // --- Input and mechanics ---
+
+const std::vector<raylib::Vector2> Snake::getSnakePos()
+{
+    std::vector<raylib::Vector2> positions;
+    for (const auto &seg : segments)
+        positions.push_back(seg.rect.GetPosition());
+    return positions;
+}
+
 void Snake::handleInput()
 {
-    // Directional input
     if ((IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)) && snakeHeadDirection != DOWN)
         snakeHeadDirection = UP;
     else if ((IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)) && snakeHeadDirection != UP)
@@ -65,95 +75,105 @@ void Snake::handleInput()
     else if ((IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)) && snakeHeadDirection != LEFT)
         snakeHeadDirection = RIGHT;
 }
-const std::vector<raylib::Vector2> Snake::getSnakePos()
-{
-    std::vector<raylib::Vector2> positions;
-    for (const auto &seg : segments)
-    {
-        positions.push_back(seg.rect.GetPosition());
-    }
-    return positions;
-}
+
 void Snake::move()
 {
     if (segments.empty())
         return;
 
-    // Store previous positions
     std::vector<raylib::Vector2> prevPositions = getSnakePos();
 
-    // Move head
     switch (snakeHeadDirection)
     {
     case UP:
-        segments[0].rect.y -= Grid::gridSize;
+        segments[0].rect.y -= gridRef.gridSize;
         break;
     case DOWN:
-        segments[0].rect.y += Grid::gridSize;
+        segments[0].rect.y += gridRef.gridSize;
         break;
     case LEFT:
-        segments[0].rect.x -= Grid::gridSize;
+        segments[0].rect.x -= gridRef.gridSize;
         break;
     case RIGHT:
-        segments[0].rect.x += Grid::gridSize;
+        segments[0].rect.x += gridRef.gridSize;
         break;
     }
 
-    // Move body
     for (size_t i = 1; i < segments.size(); ++i)
         segments[i].rect.SetPosition(prevPositions[i - 1].x, prevPositions[i - 1].y);
 }
 
 void Snake::scale()
 {
-    static float lastGridSize = Grid::gridSize; // Keep track of previous grid size
+    static float lastGridSize = gridRef.gridSize;
+    float scaleFactor = gridRef.gridSize / lastGridSize;
 
-    // Calculate scaling factor
-    float scaleFactor = Grid::gridSize / lastGridSize;
-
-    // Scale each segment's position proportionally
     for (auto &segment : segments)
     {
         segment.rect.SetPosition(segment.rect.x * scaleFactor, segment.rect.y * scaleFactor);
-        segment.rect.SetSize(Grid::gridSize, Grid::gridSize);
+        segment.rect.SetSize(gridRef.gridSize, gridRef.gridSize);
     }
 
     snapSnakeToGrid();
-
-    lastGridSize = Grid::gridSize; // Update for next scale
+    lastGridSize = gridRef.gridSize;
 }
 
 void Snake::wrapPos()
 {
     Vector2 headPos = getHeadPos();
-    // Wrap horizontally
-    if (headPos.x < 0)
-        setHeadPos({GetScreenWidth() - Grid::gridSize, headPos.y});
-    else if (headPos.x >= GetScreenWidth())
-        setHeadPos({0,headPos.y});
 
-    // Wrap vertically
+    if (headPos.x < 0)
+        setHeadPos({GetScreenWidth() - gridRef.gridSize, headPos.y});
+    else if (headPos.x >= GetScreenWidth())
+        setHeadPos({0, headPos.y});
+
     if (headPos.y < 0)
-        setHeadPos({headPos.x,GetScreenHeight() - Grid::gridSize});
+        setHeadPos({headPos.x, GetScreenHeight() - gridRef.gridSize});
     else if (headPos.y >= GetScreenHeight())
-        setHeadPos({headPos.x,0});
+        setHeadPos({headPos.x, 0});
 }
 
 void Snake::snapSnakeToGrid()
 {
     for (auto &segment : segments)
     {
-        snapToGrid(segment.rect.x, Grid::gridSize);
-        snapToGrid(segment.rect.y, Grid::gridSize);
+        snapToGrid(segment.rect.x, gridRef.gridSize);
+        snapToGrid(segment.rect.y, gridRef.gridSize);
     }
 }
-// --- Internal helpers ---
+
+bool Snake::isIntact() const
+{
+    for (size_t i = 1; i < segments.size(); ++i)
+    {
+        int dx = static_cast<int>(segments[i].rect.x - segments[i - 1].rect.x);
+        int dy = static_cast<int>(segments[i].rect.y - segments[i - 1].rect.y);
+
+        if (abs(dx) > gridRef.gridSize || abs(dy) > gridRef.gridSize)
+            return false;
+
+        bool adjacent = (abs(dx) == gridRef.gridSize && dy == 0) ||
+                        (abs(dy) == gridRef.gridSize && dx == 0);
+        if (!adjacent)
+            return false;
+
+        if (segments[i].rect.x < 0 || segments[i].rect.x >= GetScreenWidth() ||
+            segments[i].rect.y < 0 || segments[i].rect.y >= GetScreenHeight() ||
+            segments[i - 1].rect.x < 0 || segments[i - 1].rect.x >= GetScreenWidth() ||
+            segments[i - 1].rect.y < 0 || segments[i - 1].rect.y >= GetScreenHeight())
+            return false;
+    }
+    return true;
+}
+
+// --- Getters/Setters ---
 
 const raylib::Vector2 Snake::getHeadPos()
 {
     return segments[0].rect.GetPosition();
 }
-void Snake::setHeadPos(Vector2 newPos) 
+
+void Snake::setHeadPos(Vector2 newPos)
 {
     segments[0].rect.SetX(newPos.x);
     segments[0].rect.SetY(newPos.y);
@@ -163,30 +183,4 @@ void Snake::grow()
 {
     segments.push_back(SnakeSegment());
     length++;
-}
-bool Snake::isIntact() const
-{
-    for (size_t i = 1; i < segments.size(); ++i)
-    {
-        int dx = static_cast<int>(segments[i].rect.x - segments[i - 1].rect.x);
-        int dy = static_cast<int>(segments[i].rect.y - segments[i - 1].rect.y);
-
-        // Check for wrapping: if the absolute difference is larger than grid size, it's wrapping
-        if (abs(dx) > Grid::gridSize || abs(dy) > Grid::gridSize)
-            return false;
-
-        // Segments must be adjacent: either dx or dy is exactly gridSize, the other is 0
-        bool adjacent = (abs(dx) == Grid::gridSize && dy == 0) ||
-                        (abs(dy) == Grid::gridSize && dx == 0);
-        if (!adjacent)
-            return false;
-
-        // Also, both segments must be within screen bounds
-        if (segments[i].rect.x < 0 || segments[i].rect.x >= GetScreenWidth() ||
-            segments[i].rect.y < 0 || segments[i].rect.y >= GetScreenHeight() ||
-            segments[i - 1].rect.x < 0 || segments[i - 1].rect.x >= GetScreenWidth() ||
-            segments[i - 1].rect.y < 0 || segments[i - 1].rect.y >= GetScreenHeight())
-            return false;
-    }
-    return true;
 }

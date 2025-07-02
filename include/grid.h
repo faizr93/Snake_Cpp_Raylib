@@ -1,20 +1,21 @@
 #pragma once
-#include "gameObject.h"
+
 #include <vector>
+#include "gameObject.h"
 
 class Grid : public GameObject
 {
 public:
-    static bool  isScaling;
-    static float gridSize;
+    bool  isScaling;
+    float gridSize;
 
-    Grid();
+    Grid(float gridSize = 25.0f);
 
     std::vector<int> getCommonScreenFactors();
     std::vector<int> getClampedFactors(const std::vector<int>& factors, int min, int max);
 
     std::vector<int> gridSizes         = getClampedFactors(getCommonScreenFactors(), 10, 50);
-    int              gridSizesIterator = static_cast<int>(gridSizes.size()) / 2; // Start in the middle
+    int              gridSizesIterator = static_cast<int>(gridSizes.size()) / 2;
 
     void handleInput();
     void update() override;
