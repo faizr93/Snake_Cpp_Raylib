@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SNAKE_CPP_RAYLIB_FOODS_H_
+#define SNAKE_CPP_RAYLIB_FOODS_H_
 
 #include <raylib-cpp.hpp>
 #include "gameObject.h"
@@ -28,7 +29,7 @@ class FoodHandler : public GameObject
 public:
     FoodHandler(Snake& s = *(Snake*)nullptr, Grid& gridRef = *(Grid*)nullptr);
     Snake& snakeRef;
-Grid& gridRef;
+    Grid& gridRef;
     void update() override;
     void render() const override;
 
@@ -43,3 +44,5 @@ protected:
     std::vector<Food> foods;
     int               maxFoodCount;
 };
+
+#endif // SNAKE_CPP_RAYLIB_FOODS_H_

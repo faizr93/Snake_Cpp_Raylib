@@ -1,5 +1,5 @@
-#pragma once
-
+#ifndef SNAKE_CPP_RAYLIB_SNAKE_H_
+#define SNAKE_CPP_RAYLIB_SNAKE_H_
 #include "snakeSegment.h"
 #include "gameObject.h"
 
@@ -54,3 +54,4 @@ public:
 private:
     int length = 7;
 };
+#endif // SNAKE_CPP_RAYLIB_SNAKE_H_

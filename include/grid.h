@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SNAKE_CPP_RAYLIB_GRID_H_
+#define SNAKE_CPP_RAYLIB_GRID_H_
 
 #include <vector>
 #include "gameObject.h"
@@ -21,3 +22,5 @@ public:
     void update() override;
     void render() const override;
 };
+
+#endif // SNAKE_CPP_RAYLIB_GRID_H_

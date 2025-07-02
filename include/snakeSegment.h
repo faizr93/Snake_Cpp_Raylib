@@ -1,6 +1,8 @@
-#pragma once
+#ifndef SNAKE_CPP_RAYLIB_SNAKESEGMENT_H_
+#define SNAKE_CPP_RAYLIB_SNAKESEGMENT_H_
 
 #include <raylib-cpp.hpp>
+
 #include "gameObject.h"
 #include "grid.h"
 
@@ -19,3 +21,5 @@ public:
     void render() const override;
     void update() override;
 };
+
+#endif // SNAKE_CPP_RAYLIB_SNAKESEGMENT_H_

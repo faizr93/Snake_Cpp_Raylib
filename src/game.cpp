@@ -8,9 +8,9 @@ Game::Game() {}
 // --- Input Handling ---
 
 void Game::handleInput() {
-    snake.handleInput();
-    if (!snake.isIntact()) return;
-    grid.handleInput();
+    snake_.handleInput();
+    if (!snake_.isIntact()) return;
+    grid_.handleInput();
 }
 
 // --- Rendering ---
@@ -18,14 +18,14 @@ void Game::handleInput() {
 void Game::render() const {
     BeginDrawing();
     ClearBackground(BLACK);
-    grid.render();
-    snake.render();
+    grid_.render();
+    snake_.render();
     EndDrawing();
 }
 
 // --- Update ---
 
 void Game::update() {
-    grid.update();
-    snake.update();
+    grid_.update();
+    snake_.update();
 }
