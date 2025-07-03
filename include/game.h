@@ -4,6 +4,7 @@
 #include "snake.h"
 #include "gameObject.h"
 #include "grid.h"
+#include "foodHandler.h"
 
 /// Main game controller: owns grid, snake, and collisions.
 class Game
@@ -17,6 +18,7 @@ public:
 private:
     Grid grid_;                         // Game board
     Snake snake_;                       // Player snake
+    FoodHandler foodHandler_;
 };
 
 #endif // SNAKE_CPP_RAYLIB_GAME_H_

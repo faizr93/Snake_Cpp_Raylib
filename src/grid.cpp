@@ -1,12 +1,16 @@
+#include "grid.h"
+
 #include <raylib-cpp.hpp>
 #include <algorithm>
-#include "grid.h"
+#include <iostream>
+#include <vector>
+
 #include "utils.h"
 
 // --- Construction ---
 
 Grid::Grid(float gridSize)
-: gridSize(25.0f), isScaling(false) {}
+: gridSize(25.0f), sizeChanged(false) {}
 
 // --- Factor Utilities ---
 
@@ -35,20 +39,20 @@ std::vector<int> Grid::getClampedFactors(const std::vector<int> &factors, int mi
 
 // --- Input Handling ---
 
-void Grid::handleInput()
+void Grid::handleInput(int keyPressed)
 {
-    isScaling = false;
-    if (IsKeyPressed(KEY_KP_1))
+    sizeChanged = false;
+    if (keyPressed == KEY_KP_1)
     {
         ++gridSizesIterator;
         gridSize = gridSizes[gridSizesIterator % gridSizes.size()];
-        isScaling = true;
+        sizeChanged = true;
     }
-    else if (IsKeyPressed(KEY_KP_2))
+    else if (keyPressed == KEY_KP_2)
     {
         --gridSizesIterator;
         gridSize = gridSizes[gridSizesIterator % gridSizes.size()];
-        isScaling = true;
+        sizeChanged = true;
     }
 }
 
@@ -63,4 +67,9 @@ void Grid::render() const
 
     for (int y = 0; y < GetScreenHeight(); y += Grid::gridSize)
         DrawLine(0, y, GetScreenWidth(), y, DARKGRAY);
+}
+
+void Grid::printGridSize() const
+{
+    std::cout<<gridSize<<std::endl;
 }

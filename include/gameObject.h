@@ -4,7 +4,7 @@
 class GameObject
 {
 public:
-    virtual void update() = 0;
+    virtual void update() {};
     virtual void render() const = 0;
 };
 

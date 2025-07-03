@@ -1,6 +1,8 @@
-#include <raylib-cpp.hpp>
-#include <algorithm>
 #include "utils.h"
+
+#include <algorithm>
+#include <vector>
+#include <raylib-cpp.hpp>
 
 // --- Utility Functions ---
 
